@@ -3,7 +3,7 @@ import argparse
 import itertools
 
 
-filename = "C:\\Users\\KoliaS-PC\\PycharmProjects\\Password Hacker\\Password Hacker\\task\\hacking\\passwords.txt"
+filename = "passwords.txt"
 psw_list = list(item.replace("\n", "") for item in open(filename))
 
 
