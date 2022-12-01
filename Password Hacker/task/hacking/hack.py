@@ -3,6 +3,7 @@ import argparse
 import itertools
 import json
 import string
+import time
 
 filename = "C:\\Users\\KoliaS-PC\\PycharmProjects\\Password Hacker\\Password Hacker\\task\hacking\\logins.txt"
 logins_list = list(item.replace("\n", "") for item in open(filename))
@@ -49,9 +50,13 @@ with socket.socket() as cli_socket:
 
     while return_code != 100:
         for char in psw_list:
-
+            time_stamp_start = time.time()
             cli_socket.send("".join(generate_req(login, save_psw + char)).encode())
-            return_code = check_answer(cli_socket.recv(1024))
+            recived_data = cli_socket.recv(1024)
+            time_diff = round(time.time() - time_stamp_start ,3)
+            return_code = check_answer(recived_data)
+            if time_diff > 0.05:
+                return_code = 3
 
             if return_code == 3:
                 save_psw = save_psw + char
@@ -59,3 +64,4 @@ with socket.socket() as cli_socket:
                 psw_found = 1
                 print(generate_req(login, save_psw + char))
                 break
+
